@@ -1,9 +1,13 @@
 #! /usr/env/python
 # -*- coding: utf-8 -*-
 
+PREV_KNOWN_ISOPEP = [ 'AgI_II_C2',      'Sgo0707_N2', 'GramPos_pilinBB',
+         'Collagen_bind',       'Antigen_C',  'GBS104-like_Ig',
+               'DUF5979',            'SpaA', 'GramPos_pilinD3',
+                  'FctA', 'GramPos_pilinD1',           'Cna_B']
+
 NON_ISOPEP_DOMAINS = [
     "Helicase_C_2",
-    'DUF7617',
     'Cu-oxidase_2',
     'DeoC',
     'Ion_trans',
@@ -88,5 +92,6 @@ ISOPEP_DOMAINS = [
     'DUF7617',
     'DUF7929',
     'DUF7925',
+    'DUF7617',
     'DUF7601', 'CARDB' # These ones not present in the paper (to Few hits)
 ]

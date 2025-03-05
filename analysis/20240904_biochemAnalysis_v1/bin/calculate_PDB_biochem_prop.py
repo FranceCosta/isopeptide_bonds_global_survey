@@ -68,6 +68,10 @@ def main():
     # Get torsion angles
     df["pseudo_omega"], df["pseudo_psi"], df["pseudo_phi"], df["lys_x3"], df["lys_x4"] = zip(*df.apply(angles, axis=1))
 
+    # Cis/trans annot
+    df["cis"] = False
+    df.loc[(df["pseudo_omega"]>=-60)&(df["pseudo_omega"]<=60), "cis"] = True
+
     df.to_csv(OUTPUT_TABLE, index=False)
 
 def get_aro_params(df, dist_threshold=10) -> pd.DataFrame:
@@ -224,7 +228,7 @@ def isopep_aro_plane_angle(row) -> float:
 
     return angle_degrees
 
-def closest_o(row, threshold=4):
+def closest_o(row, threshold=5):
     """
 
         Find the closest oxygen atom to O atom
