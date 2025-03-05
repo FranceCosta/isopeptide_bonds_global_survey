@@ -1,0 +1,1 @@
+# Run biochemical analysis of both PDB and AF2 templates

@@ -1,0 +1,4 @@
+- `2022-10-28-Adh_list.csv` adhesin domains list provided by Vivian Monzon;
+- `2024-01-17-Stalk_list.csv` manually curated stalk domains list based on a table provided by Vivian Monzon;
+- `20250212_pathogens.csv` is a list of known pathogens found to express intramolecular isopeptide bond-containing proteins, compiled by Rob;
+- `20250127_isopeptideBonds.csv` list of PDB isopeptide bonds from Costa et al. 2024;

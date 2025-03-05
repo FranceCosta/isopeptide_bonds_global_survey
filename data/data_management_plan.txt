@@ -1,0 +1,39 @@
+*Data Management Plan*
+
+Francesco Costa, 01/11/2024
+
+**What types of research data are you working with?**
+
+Protein structure data in PDB formats, tabular data in CSV format.
+
+**What is your strategy for organising your data?**
+
+Input files, subproject directories and jupyter notebooks are named following this naming convention:
+“<date in YYYYMMDD format>_<name>_<version>”
+
+The project directory contains the following subdirectories:
+-	“analysis” contains subprojects. Each contains “input”, “output” and code (named “bin” or and “sh”) to store input data, output files and code. A “README.md” file explaining the purpose of the subproject and relevant notes is present as well.
+-	Each subproject may additionally contain jupyter notebooks used for data analysis within the context of the subproject.
+-	“bin” contains code in python shared throughout the project.
+-	“data” contains input data and a “README.md” file explaining the content of each file. 
+-	“notebooks” contains data analysis jupyter notebooks.
+-	“output” contains code-generated output files.
+-	“sh” contains bash scripts.
+-	“.env” is a file which contains code variables used throughout the project.
+-	“README.md” is a file which contains relevant information about the project.
+-   Each directory can contain a subdirectory “deprecated” to store old files not in use anymore.
+
+**What is your data backup strategy?**
+
+The entire project is stored at the EBI computer cluster and backed up regularly.
+All the files except output files that can be easily reproduced by via code execution are regularly backed up in a private repository which will be made publicly available upon preprint publication.
+Large data will be made available in a public repository (i.e. Zenodo) upon publication of the preprint. 
+
+**How do you exchange files (and other information) with your collaborators?**
+
+Through google drive.
+
+**Are you working with commercial/sensitive/personal/patentable data? Will you be able to share these data?**
+
+No.
+

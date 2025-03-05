@@ -1,0 +1,16 @@
+*log
+notebooks/taxdump.tar.gz
+.pfamconfig
+database
+lib
+*.err
+*.log
+*tmp
+*.out
+*analysis/20250303_listForUniprot_v1
+**/deprecated/
+*.ipynb_checkpoints
+*output
+*manually_reassigned
+*PDB_bad_bonds_check_reassigned
+*pfamenv.py

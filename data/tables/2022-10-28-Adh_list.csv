@@ -1,0 +1,33 @@
+Name,Pfam ID,Pfam Clan,Clan ID,Host ligand type,PDB
+Bact_lectin,PF18483,Concanavalin,CL0004,Carbohydrate,4M01
+Cleaved_Adhesin,PF07675,Concanavalin,CL0004,Carbohydrate,3KM5
+SdrG_C_C,PF10425,Adhesin,CL0204,Protein,2VR3
+Collagen_bind,PF05737,Adhesin,CL0204,Protein,2F68 & 1AMX
+FimH_man-bind,PF09160,Adhesin,CL0204,Carbohydrate,X
+PA14,PF07691,PA14,CL0301,Carbohydrate,6M8M
+LRR_4,PF12799,LRR,CL0022,Protein,2OMX_A
+B (SpAB) ,PF02216,B_GA,CL0598,Protein,1ZXG
+Intimin_C,PF07979,C_Lectin,CL0056,Protein,1E5U
+VWA,PF00092,vWA-like,CL0128,Protein,7B7P
+BclA_C,PF18573,C1q_TNF,CL0100,Protein,2R6Q
+FadA,PF09403,OML zippers,CL0590,Protein,X
+CshA_NR2,PF18651,No clan,No clan,Protein,5L2D
+YadA_head,PF05658,No clan,No clan,Protein,3WP8
+AlphaC_N,PF08829,No clan,No clan,Protein,1YWM
+AlphaC_N2,PF17480,No clan,No clan,Protein,1YWM
+SabA_adhesion,PF18304,No clan,No clan,Carbohydrate,6GMM
+SSURE,PF11966,No clan,No clan,Protein,
+TED,PF08341,No clan,No clan,Protein,6FX6 & 5A0L
+Adhesin_P1_N,PF18652,No clan,No clan,Carbohydrate,4TSH
+GbpC,PF08363,No clan,No clan,Carbohydrate,3IOX
+Ice_binding,PF11999,No clan,No clan,Ice crystals,4NUH
+HiaBD2,PF15403,No clan,No clan,Protein,3EMF
+Pertactin,PF03212,Pec_lyase-like,CL0268,Protein,3SYJ
+TAA-Trp-ring,PF15401,No clan,No clan,Protein,5LNL
+Sgo0707_N1,PF18873,No clan,No clan,Protein,4IGB
+BspA_v,PF18220,No clan,No clan,Protein,5DZ8
+GspA_SrpA_N,PF20164,E-set,CL0159,Carbohydrate,5EQ2
+SRRP-BR,,,,,5NY0
+Gp38,PF05268,Gly_rich,CL0672,,
+Gly_rich,PF12810,Gly_rich,CL0672,,
+Gly_rich_2,PF21722,Gly_rich,CL0672,,
