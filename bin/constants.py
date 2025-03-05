@@ -1,22 +1,92 @@
 #! /usr/env/python
 # -*- coding: utf-8 -*-
 
-def get_sequence(row, pdb = True)->str:
-    """
+NON_ISOPEP_DOMAINS = [
+    "Helicase_C_2",
+    'DUF7617',
+    'Cu-oxidase_2',
+    'DeoC',
+    'Ion_trans',
+    'AsmA',
+    'Radical_SAM',
+    'CarboxypepD_reg',
+    'Ribonuc_L-PSP',
+    'Phosphorylase',
+    'Ufd2P_core',
+    'DUF2334',
+    'HEM4',
+    'Transpeptidase',
+    'Arginosuc_syn_C',
+    'Arabinose_Iso_C',
+    'Glyco_hydro_79n',
+    'Peptidase_C13',
+    'Phage_portal_2',
+    'MbnP',
+    'AsnA',
+    'GH113',
+    'TruD',
+    'GCE_fung',
+    'ATG22',
+    'DrsE_2',
+    'Glyco_hydro_38C',
+    'Glyco_hydro_3',
+    'ELFV_dehydrog',
+    'MFS_1',
+    'MFS_2',
+    'Lip_A_acyltrans',
+    'HTH_24',
+    'N6_Mtase',
+    'NB-ARC',
+    'NUDIX',
+    'NUP214',
+    'DUF4203',
+    'DUF5723',
+    'Memo',
+    'MucBP',
+    'Nrap_D2',
+    'NYN',
+    'PBP_dimer_2',
+    'Omp85',
+    'PI3_PI4_kinase',
+    'Cu-oxidase_4',
+    'DDE_Tnp_1',
+    'DUF1397',
+    'Ribosomal_S3Ae',
+    'RnaseA',
+    'SBP_bac_1',
+    'SBP_bac_8',
+    'SRR1',
+    'Usher',
+    'WD40',
+    'YycH'
+]
 
-        Get sequence between r1_bond and r2_bond from structure
-    
-    """
-    structure_path = row["structure_path"]
-    if pdb:
-        r1 = row["Position 1\r\n(Bond 1)"]
-        r3 = row["Position 3\r\n(Bond 2)"]
-    else:
-        r1 = row["r1_af"]
-        r3 = row["r3_af"]
-    seq_start = min([r1, r3])
-    seq_end = max([r1, r3])
-    sequence = list(SeqIO.parse(structure_path, "pdb-atom"))[0]
-    # Adjust seq start and end based on pdb seq structure start and end
-    pdb_start = sequence.annotations["start"]
-    return str(sequence.seq)[seq_start:seq_end]
+ISOPEP_DOMAINS = [
+    'SdrD_B',
+    'SpaA',
+    'DUF11',
+    'Cna_B',
+    'DUF7507',
+    'Collagen_bind',
+    'FctA',
+    'GramPos_pilinBB',
+    'DUF5979',
+    'GramPos_pilinD1',
+    'DUF7619',
+    'AgI_II_C2',
+    'SpaA_4',
+    'Helicase_C_2',
+    'DUF7933',
+    'Antigen_C',
+    'SpaA_2',
+    'GBS104-like_Ig',
+    'DUF7927',
+    'SpaA_3',
+    'Sgo0707_N2',
+    'DUF7926',
+    'GramPos_pilinD3',
+    'DUF7617',
+    'DUF7929',
+    'DUF7925',
+    'DUF7601', 'CARDB' # These ones not present in the paper (to Few hits)
+]
