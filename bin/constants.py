@@ -1,0 +1,22 @@
+#! /usr/env/python
+# -*- coding: utf-8 -*-
+
+def get_sequence(row, pdb = True)->str:
+    """
+
+        Get sequence between r1_bond and r2_bond from structure
+    
+    """
+    structure_path = row["structure_path"]
+    if pdb:
+        r1 = row["Position 1\r\n(Bond 1)"]
+        r3 = row["Position 3\r\n(Bond 2)"]
+    else:
+        r1 = row["r1_af"]
+        r3 = row["r3_af"]
+    seq_start = min([r1, r3])
+    seq_end = max([r1, r3])
+    sequence = list(SeqIO.parse(structure_path, "pdb-atom"))[0]
+    # Adjust seq start and end based on pdb seq structure start and end
+    pdb_start = sequence.annotations["start"]
+    return str(sequence.seq)[seq_start:seq_end]
