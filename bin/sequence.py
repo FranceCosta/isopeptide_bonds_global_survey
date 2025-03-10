@@ -40,6 +40,34 @@ def find_sortase(seq:str):
 def get_sequence(row, pdb = True)->str:
     """
 
+        Get sequence between min-20 and max+20 isopep signature residues from structure
+    
+    """
+    structure_path = row["structure_path"]
+    if pdb:
+        r1 = row["Position 1\r\n(Bond 1)"]
+        r2 = row["Position 2\r\n(catalytic)"]
+        r3 = row["Position 3\r\n(Bond 2)"]
+    else:
+        r1 = row["r1_af"]
+        r2 = row["r2_af"]
+        r3 = row["r3_af"]
+    seq_start = min([r1, r2, r3])
+    seq_end = max([r1, r2, r3])
+    sequence = list(SeqIO.parse(structure_path, "pdb-atom"))[0]
+    
+    # Adjust seq start and end based on pdb seq structure start and end
+    pdb_start = sequence.annotations["start"]
+    seq_start = seq_start - pdb_start - 20
+    seq_end = seq_end - pdb_start + 20
+    if seq_start < 0:
+        seq_start = 0
+
+    return str(sequence.seq)[seq_start:seq_end]
+
+def _get_sequence(row, pdb = True)->str:
+    """
+
         Get sequence between r1_bond and r2_bond from structure
     
     """
@@ -53,7 +81,6 @@ def get_sequence(row, pdb = True)->str:
     seq_start = min([r1, r3])
     seq_end = max([r1, r3])
     sequence = list(SeqIO.parse(structure_path, "pdb-atom"))[0]
-    # Adjust seq start and end based on pdb seq structure start and end
-    pdb_start = sequence.annotations["start"]
+
     return str(sequence.seq)[seq_start:seq_end]
 
