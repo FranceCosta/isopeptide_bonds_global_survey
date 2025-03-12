@@ -79,7 +79,6 @@ ISOPEP_DOMAINS = [
     'DUF7619',
     'AgI_II_C2',
     'SpaA_4',
-    'Helicase_C_2',
     'DUF7933',
     'Antigen_C',
     'SpaA_2',
@@ -89,9 +88,9 @@ ISOPEP_DOMAINS = [
     'Sgo0707_N2',
     'DUF7926',
     'GramPos_pilinD3',
-    'DUF7617',
     'DUF7929',
     'DUF7925',
     'DUF7617',
-    'DUF7601', 'CARDB' # These ones not present in the paper (to Few hits)
+    'DUF7601', 
+#    'CARDB' # This one is not present in the paper (to Few hits)
 ]
