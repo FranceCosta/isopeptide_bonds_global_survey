@@ -62,10 +62,6 @@ def main():
 
         # Get bond length
         df["bond_length"] = df.apply(getBondLength, axis=1)
-
-        # Get Aromatic data
-        aro_df = getAroParam(df)
-        df = pd.merge(df, aro_df, on=["structure_path", "r1_af"], how="left")
         
         # Get torsion angles
         df["pseudo_omega"], df["pseudo_psi"], df["pseudo_phi"], df["lys_x3"], df["lys_x4"] = zip(*df.apply(angles, axis=1))
@@ -143,71 +139,6 @@ def mapResidues(row):
     r3_af  = r3 - pdb_seq_start + 1
     return [r1_af, r2_af, r3_af]
 
-
-
-def getAroParam(df, dist_threshold=10) -> pd.DataFrame:
-    """
-
-        Get data asscoiated to aro rings: lenght, angle eith normal of aro plane
-
-        PARAMETERS
-        ----------
-        dist_threshold=10, distance threshold to detect aromatic residues nearby NZ lys
-
-    """
-    
-    # Get bond and distance
-    outlist = []
-    for index, row in df.iterrows():
-        struct_path = row["structure_path"]
-        r1 = row["r1_af"]
-        pdb_file = pdb.PDBFile.read(struct_path)
-        # Exclude water
-        structure = struc.array([atom for atom in pdb_file.get_structure()[0] if atom.hetero==False])
-
-        # Atoms within dist_threshold A from lys NZ
-        lys_nz = struc.array([atom for atom in structure if atom.res_id==r1 and atom.atom_name=="NZ"])
-        atoms_within_threshold = surroundingAtom(lys_nz, structure, dist_threshold)
-        # Get only aromatic rings
-        aros = [atom for atom in atoms_within_threshold if atom.res_name in AROMATICS.keys()]
-        
-        # Get closest aro ring by considering aro ring average distance
-        aro_rings = struc.array([atom for atom in atoms_within_threshold if atom.res_name in AROMATICS.keys()\
-                                and atom.atom_name in AROMATICS.get(atom.res_name)])
-        # Find closer aro
-        d = 15
-        closest_resid = np.NaN
-        for res_id in set(aro_rings.res_id):
-            if np.mean(struc.array([atom for atom in aro_rings if atom.res_id==res_id]).distance) < d:
-                d = np.mean(struc.array([atom for atom in aro_rings if atom.res_id==res_id]).distance)
-                closest_resid = res_id
-        # Find which aro is
-        aro = [atom for atom in aro_rings if atom.res_id==closest_resid][0].res_name
-        closest_aro_ring = struc.array([atom for atom in aros if atom.res_id == closest_resid])
-        ring_center = struc.centroid(closest_aro_ring)
-        # Compute the vectors along the plane of the ring
-        v1 = closest_aro_ring[1].coord - closest_aro_ring[0].coord  # Vector between two ring atoms
-        v2 = closest_aro_ring[2].coord - closest_aro_ring[0].coord
-        normal_vector = np.cross(v1, v2)
-        # Normalize the normal vector to get a unit vector
-        normal_vector /= np.linalg.norm(normal_vector)
-        # Get the vector from the N atom (nz) to the center of the ring (tyr_ring_center)
-        nz = lys_nz.coord[0]
-        nz_to_ring_center = nz - ring_center
-        # Normalize this vector as well
-        nz_to_ring_center /= np.linalg.norm(nz_to_ring_center)
-        # Calculate the dot product between the two vectors
-        dot_product = np.dot(normal_vector, nz_to_ring_center)
-        # Use the dot product to calculate the angle (in radians) between the vectors
-        angle_rad = np.arccos(dot_product)
-        # Convert the angle to degrees
-        angle_deg = np.degrees(angle_rad)
-        # Calculate the distance between the N atom and the ring center
-        distance = struc.distance(ring_center, nz)
-        
-        outlist.append([struct_path, r1, aro, distance, angle_deg])   
-    return pd.DataFrame(outlist, columns=["structure_path", "r1_af", "aro", "distance_to_aro", "angle_with_aro"])     
-       
 def getBondLength(row) -> float:
     """
 
@@ -237,28 +168,6 @@ def getBondLength(row) -> float:
         # This occurs when the Lys does not have an N
         ""
     return dist
-
-def surroundingAtom(source_atom:np.array, structure_array:list, threshold:float) -> list:
-    """
-
-        Find structure atoms within trehold distance in amstrongs from given atom
-
-        PARAMETERS
-        ----------
-        source_atom: np.array:
-        structure_array:list
-        treshold:float
-
-        RETURN
-        ------
-        resi_below_treshold:list: list of residues below given treshold
-        
-    """
-    distances = struc.distance(source_atom, structure_array)
-    structure_array.add_annotation("distance", dtype=float)
-    structure_array.distance = distances
-
-    return struc.array([atom for atom in structure_array if atom.distance < threshold])
 
 def getASA(row) -> float:
     """
@@ -306,8 +215,6 @@ def getASA(row) -> float:
         print(row)
 
     return rASA
-
-
 
 if __name__ == "__main__":
     main()

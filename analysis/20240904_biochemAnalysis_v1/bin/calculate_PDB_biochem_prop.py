@@ -81,8 +81,9 @@ def main():
     df["pseudo_omega"], df["pseudo_psi"], df["pseudo_phi"], df["lys_x3"], df["lys_x4"] = zip(*df.apply(angles, axis=1))
 
     # Cis/trans annot
-    df["cis"] = False
-    df.loc[(df["pseudo_omega"]>=-60)&(df["pseudo_omega"]<=60), "cis"] = True
+    df["cis_trans"] = np.NaN
+    df.loc[(df["pseudo_omega"]>=-60)&(df["pseudo_omega"]<=60), "cis_trans"] = "cis"
+    df.loc[(df["pseudo_omega"]<-120)|(df["pseudo_omega"]>120), "cis_trans"] = "trans"
 
     df.to_csv(OUTPUT_TABLE, index=False)
 
