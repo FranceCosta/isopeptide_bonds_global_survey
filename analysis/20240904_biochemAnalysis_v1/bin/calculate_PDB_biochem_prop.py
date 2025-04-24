@@ -100,7 +100,6 @@ def get_aro_params(df, dist_threshold=10) -> pd.DataFrame:
 
     """
     
-    dist_threshold=10
     # Cutoffs for aro cap
     # Adopt some approximate values since I am not considering hydrogens
     # max pi-H distance + C-H distance
