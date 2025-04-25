@@ -17,7 +17,7 @@ matplotlib==3.8.0
 numpy==1.26.4
 ```
 
-## Project structure
+## Project structure
 
 ```bash
 .
@@ -33,7 +33,7 @@ numpy==1.26.4
 
 Each subproject within analysis/ follows a consistent structure:
 
-- input/, output/, and bin/ or sh/ folders
+- input/, output/, and bin/ or/and sh/ folders
 
 - A README.md with subproject-specific notes
 
@@ -66,5 +66,7 @@ Output files are reproducible and not backed up here but downloadable from [Zeno
 ## Contact
 
 For questions related to the analysis, contact:
+
 Francesco Costa
+
 Email: fcosta@ebi.ac.uk
