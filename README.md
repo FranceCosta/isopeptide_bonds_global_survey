@@ -57,6 +57,8 @@ To reproduce the key analyses:
 
 4. Follow the instructions in each subproject’s README.md or use the Jupyter notebooks provided in notebooks/ or analysis/*.
 
+**Note that several scripts rely on the [SLURM job scheduler](https://slurm.schedmd.com/documentation.html)**
+
 ## Data Availability
 
 All non-generated input data is stored in data/ and described in data/README.md.
