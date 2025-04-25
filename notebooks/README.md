@@ -1,0 +1,4 @@
+- Code to analyse biochemical properties of PDB/AF2 isopeptide bond-containing structures: `20241212_analyseDataset_v2.ipynb`;
+- Code to generate most manuscript figures: `20250114_figures_v2.ipynb`;
+- Analyse Isopeptor's predictions on AF2 structures: `20250205_analyseAF2_v2.ipynb`;
+- Analyse Isopeptor's AFDB scan results: `20250305_analyseAFDBScan_v2.ipynb`
