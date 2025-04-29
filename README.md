@@ -2,7 +2,7 @@
 "A global survey of intramolecular isopeptide bonds"
 
 **Preprint available at:** 
-[]()
+[https://www.biorxiv.org/content/10.1101/2025.04.25.650565v1](https://www.biorxiv.org/content/10.1101/2025.04.25.650565v1)
 
 This repository contains the scripts, notebooks, and data structure used to perform the analyses reported in the manuscript. It is intended to enable reproducibility and transparency.
 
