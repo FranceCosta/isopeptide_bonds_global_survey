@@ -14,8 +14,6 @@ import numpy as np
 import biotite.structure.io.pdb as pdb
 import biotite.structure as struc
 from dotenv import load_dotenv
-
-from dotenv import load_dotenv
 load_dotenv("../../.env")
 DATA_TABLE = os.getenv("TABLE")
 POSITIVE_CONTROL = os.getenv("POSITIVE_CONTROL")

@@ -9,7 +9,7 @@ This repository contains the scripts, notebooks, and data structure used to perf
 ## Requirements
 The analysis was performed using Python 3.12.2 with the following packages:
 ```bash
-biotite==1.0.1  
+biotite==1.3.0
 pandas==2.1.1  
 seaborn==0.13.2  
 bio==1.83  
