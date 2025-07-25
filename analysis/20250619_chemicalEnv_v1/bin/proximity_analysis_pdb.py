@@ -10,7 +10,6 @@ load_dotenv("../../.env")
 
 DATA_TABLE = os.getenv("TABLE")
 POSITIVE_CONTROL = os.getenv("POSITIVE_CONTROL")
-MMSEQS2_CLUSTERS = os.getenv("MMSEQS2_CLUSTERS")
 THRESHOLD = 6
 OUTPUT_CSV = "output/proximal_aa_pdb.csv"
 
@@ -33,9 +32,6 @@ def main():
     cond4 = (df["Unusual geometry/chemistry"] == False)
     cond5 = (df["Isopeptide type"]!="Mutant")
     df = df[cond1 & cond2 & cond3 & cond4 & cond5]
-    # Get clusters at differenc seq threholds
-    clus_df = pd.read_csv(MMSEQS2_CLUSTERS)
-    df = pd.merge(df, clus_df)
 
     data = []
     for index, row in df.iterrows():
@@ -90,7 +86,7 @@ def main():
         data.append([id_, r1, r2, r3]+list(aa_counter.values()))
 
     ch_df = pd.DataFrame(data, columns=["id", "r1_bond", "r_cat", "r2_bond"]+list(aa_counter.keys()))
-    ch_df = pd.merge(ch_df, df[["id", "Isopeptide type", "clus_rep_80", "clus_rep_60", "clus_rep_40", "clus_rep_20"]], how="left")
+    ch_df = pd.merge(ch_df, df[["id", "Isopeptide type"]], how="left")
     ch_df.to_csv(OUTPUT_CSV, index=False)
 
 if __name__ == "__main__":

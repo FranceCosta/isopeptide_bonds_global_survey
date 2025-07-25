@@ -26,7 +26,7 @@ isopep = ['Collagen_bind', 'GramPos_pilinBB', 'AgI_II_C2', 'Antigen_C',
        'SpaA_4', 'SpaA_2', 'SpaA_3', 'GramPos_pilinD3', 'SdrD_B']
 
 
-OUTPUT_CSV = "output/no_isopep_mapped_to_hmm.csv"
+OUTPUT_CSV = "output/no_isopep_mapped_to_msa.csv"
 MSA_DIR = "output/MSAs"
 CACHED_SEQ_CSV = "tmp/sequences.csv"
 def main():
