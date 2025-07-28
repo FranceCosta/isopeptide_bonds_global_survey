@@ -62,9 +62,6 @@ def main():
     df = pd.merge(df, w_df, how="outer", on=["PDB code", "Chain", "Position 1\r\n(Bond 1)"])
     w_df = water_od(df)
     df = pd.merge(df, w_df, how="outer", on=["PDB code", "Chain", "Position 1\r\n(Bond 1)"])
-    
-    # get water ASA
-    df["water_NZ_ASA"], df["water_OD_ASA"] = zip(*df.apply(lambda x: get_water_ASA(x), axis=1))
 
     # get closest non catalytic oxygen (within 4A)
     df["o_atom_ref"], df["o_atom_distance"] = zip(*df.apply(lambda x: closest_o(x), axis=1))
@@ -513,32 +510,6 @@ def getASA(row) -> float:
         print(row)
 
     return rASA
-
-def get_water_ASA(row) -> float:
-    """
-    
-        Calculates rASA of isopep residues. Returns average value
-    
-    """
-
-    r1_asa, r2_asa = [np.NaN]*2
-    struct_path = row["structure_path"]
-    r1 = row["water_resid_NZ"]
-    r2 = row["water_resid_OD"]
-    pdb_file = pdb.PDBFile.read(struct_path)
-    # Exclude hydrogens
-    structure = struc.array([atom for atom in pdb_file.get_structure()[0] if atom.element != "H" and ((atom.hetero==False) or (atom.atom_name=="HOH"))])
-    # Consider whole structure to calculate sASA
-    structure_sasa = struc.sasa(structure, point_number=500)
-    # Get indeces
-    if not np.isnan(r1):
-        r1_indx = [i for i, atom in enumerate(structure) if atom.res_id == r1]
-        r1_asa = sum([structure_sasa[i] for i in r1_indx])
-    if not np.isnan(r2):
-        r2_indx = [i for i, atom in enumerate(structure) if atom.res_id == r2]   
-        r2_asa = sum([structure_sasa[i] for i in r2_indx])
-
-    return [r1_asa, r2_asa]
 
 if __name__ == "__main__":
     main()
