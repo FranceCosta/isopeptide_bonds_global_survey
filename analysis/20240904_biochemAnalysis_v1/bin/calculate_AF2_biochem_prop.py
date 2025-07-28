@@ -26,11 +26,6 @@ load_dotenv("../../.env")
 DATA_TABLE = os.getenv("TABLE")
 POSITIVE_CONTROL = os.getenv("POSITIVE_CONTROL")
 
-# ring atoms
-AROMATICS = {"PHE": ["CG", "CD1", "CD2", "CE1", "CE2", "CZ"], 
-             "TYR": ["CG", "CD1", "CD2", "CE1", "CE2", "CZ"], 
-             "TRP": ["CD2", "CE2", "CE3", "CZ3", "CH2", "CZ2", "NE1",]}
-
 def main():
     for AF_DIR, OUTPUT_TABLE in ([
         [os.getenv("AF2_POS_SET"), "output/af2_biochem_properties.csv"],

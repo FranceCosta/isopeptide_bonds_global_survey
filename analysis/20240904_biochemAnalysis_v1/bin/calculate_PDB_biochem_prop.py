@@ -55,7 +55,7 @@ def main():
     # Get Aromatic data
     aro_df = get_aro_params(df)
     df = pd.merge(df, aro_df, on=["structure_path", "Chain", "Position 1\r\n(Bond 1)"], how="left")
-    df["aro-isopep_planes_angle"] = df.apply(lambda x: isopep_aro_plane_angle(x), axis=1)
+    df["aro-n_isopep_planes_angle"] = df.apply(lambda x: n_isopep_aro_plane_angle(x), axis=1)
     
     # Get water to Nz and OE1/OD1 in bond 
     w_df = water_nz(df)
@@ -96,11 +96,7 @@ def get_aro_params(df, dist_threshold=10) -> pd.DataFrame:
     """
     
     # Cutoffs for aro cap
-    # Adopt some approximate values since I am not considering hydrogens
-    # max pi-H distance + C-H distance
-    #dist_cutoff = 4.3+1.09
-    #angle_cutoffs = [70, 110]
-    dist_cutoff = 6
+    dist_cutoff = 5
     angle_cutoffs = [30, 150]
 
     outlist = []
@@ -116,51 +112,65 @@ def get_aro_params(df, dist_threshold=10) -> pd.DataFrame:
         isopep_atoms = struc.array([atom for atom in structure if (atom.res_id == r1 and atom.atom_name == "NZ") or \
                                                               (atom.res_id == r3 and atom.atom_name in ["CG", "OD1", "OD2"])])
         assert len(isopep_atoms) == 3, f"Found the following atoms in isopep_atoms: {isopep_atoms}"
+
+        lys_nz = isopep_atoms[(isopep_atoms.res_id==r1) & (isopep_atoms.atom_name=="NZ")]
+        #struc.array([atom for atom in isopep_atoms if atom.res_id==r1 and atom.atom_name=="NZ"])
+        nz_plane_atoms = isopep_atoms[((isopep_atoms.res_id==r1) & (np.isin(isopep_atoms.atom_name, ["NZ", "CE"]))) | \
+            ((isopep_atoms.res_id==r3) & (np.isin(isopep_atoms.atom_name, ["CG"])))]
+        
         # Atoms within dist_threshold A from lys NZ
-        lys_nz = struc.array([atom for atom in isopep_atoms if atom.res_id==r1 and atom.atom_name=="NZ"])
         atoms_within_threshold = surroundingAtom(lys_nz, structure, dist_threshold)
         # Get aro residues
         aro_residues_within_threshold = list(set(struc.array([atom for atom in atoms_within_threshold if atom.res_name in AROMATICS]).res_id))
 
         aro_rings = struc.array([atom for atom in structure if atom.res_id in aro_residues_within_threshold \
                                 and atom.atom_name in AROMATICS.get(atom.res_name, {"full":[]})["full"]])
-        # This is necessary to exclude incomplete residues which may not have an aro ring
         aro_residues_within_threshold = list(set(aro_rings.res_id))
 
-        # Order aro rings by distance with ring (consider both TRP rings here)
-        def get_distance(res_id):
-            """Get distance with aro ring"""
+        def get_distance(res_id, lys_nz):
+            """Get min distance with aro ring and center"""
             aro_atoms = struc.array([atom for atom in aro_rings if atom.res_id==res_id])
-            distance = np.mean(aro_atoms.distance)
-            return distance
-
-        aro_residues_within_threshold = sorted(aro_residues_within_threshold, key=lambda res_id: get_distance(res_id))
-        
-        # Iterate until a cap is detected otherwise return the first aro residue
-        aro_output = None
-        for res_id in aro_residues_within_threshold:
-            aro_cap = False
+            distance_ring = np.min(aro_atoms.distance)
             nz = lys_nz.coord[0]
-            # Sub select aromatic rings
-            aro_atoms = struc.array([atom for atom in aro_rings if atom.res_id==res_id])
-            # Calculate the distance between the N atom and the ring center
-            # Consider closer ring in case of TRP
             if aro_atoms[0].res_name == "TRP":
                 ring_1 = struc.array([atom for atom in aro_atoms if atom.atom_name in AROMATICS['TRP']["ring1"]])
                 ring_2 = struc.array([atom for atom in aro_atoms if atom.atom_name in AROMATICS['TRP']["ring2"]])
                 ring1_center = struc.centroid(ring_1)
                 ring2_center = struc.centroid(ring_2)
-                distance_ring1 = struc.distance(ring1_center, nz)
-                distance_ring2 = struc.distance(ring2_center, nz)
-                if distance_ring1 < distance_ring2:
+                distance_center1 = struc.distance(ring1_center, nz)
+                distance_center2 = struc.distance(ring2_center, nz)
+                if distance_center1 < distance_center2:
                     ring_center = ring1_center
-                    distance = distance_ring1
+                    distance_center = distance_center1
                 else:
                     ring_center = ring2_center
-                    distance = distance_ring2
+                    distance_center = distance_center2
             else:
                 ring_center = struc.centroid(aro_atoms)
-                distance = struc.distance(ring_center, nz)
+                distance_center = struc.distance(ring_center, nz)
+            
+            return [distance_ring, distance_center, min(distance_ring, distance_center), ring_center]
+
+        # Order aro rings by distance with ring (consider min ring and center distance)
+        aro_tuples = []
+        for aro_atoms in aro_residues_within_threshold:
+            distance_ring, distance_center, distance, ring_center = get_distance(aro_atoms, lys_nz)
+            aro_tuples.append((aro_atoms, distance_ring, distance_center, distance, ring_center))
+        
+        # Sort by minimum distance 
+        aro_tuples = sorted(aro_tuples, key=lambda x: x[3])
+        
+        # Iterate until a cap is detected otherwise return the first aro residue
+        aro_output = None
+        for aro_data in aro_tuples:
+            res_id, distance_ring, distance_center, distance, ring_center = aro_data
+            nz = lys_nz.coord[0]
+            aro_cap = False
+            # Sub select aromatic rings
+            aro_atoms = struc.array([atom for atom in aro_rings if atom.res_id==res_id])
+
+            # Align the system onto the aromatic residue reference
+            
 
             # Compute normal vector and normalize
             v1 = aro_atoms[1].coord - aro_atoms[0].coord
@@ -188,21 +198,24 @@ def get_aro_params(df, dist_threshold=10) -> pd.DataFrame:
                 aro_cap = True
             # Set the first by default (the closest)
             if aro_output == None:
-                aro_output = [struct_path, chain, r1, res_id, aro_atoms.res_name[0], distance, angle_degrees, aro_cap]
+                aro_output = [struct_path, chain, r1, res_id, aro_atoms.res_name[0], distance_ring, distance_center, 
+                    distance, angle_degrees, aro_cap]
             # If aro cap is detected, overwrite and break
             if aro_cap:
-                aro_output = [struct_path, chain, r1, res_id, aro_atoms.res_name[0], distance, angle_degrees, aro_cap]
+                aro_output = [struct_path, chain, r1, res_id, aro_atoms.res_name[0], distance_ring, distance_center, 
+                    distance, angle_degrees, aro_cap]
                 break
         outlist.append(aro_output)
 
     return pd.DataFrame(outlist, 
             columns=["structure_path", "Chain", "Position 1\r\n(Bond 1)", 
-            "aro_res_id", "aro_res_name", "distance_to_aro", "aro_plane_normal-isopep_NZ_angle", "aro_cap"])     
+            "aro_res_id", "aro_res_name", "distance_to_aro_ring", "distance_to_aro_center", "distance_to_aro",
+            "aro_plane_normal-isopep_NZ_angle", "aro_cap"])     
 
-def isopep_aro_plane_angle(row) -> float:
+def n_isopep_aro_plane_angle(row) -> float:
     """
 
-        Get angle between the aromatic ring plane and the isopeptide bond plane (ASN OD1, CG, LYS NZ)
+        Get angle between the aromatic ring plane and the isopeptide bond N plane (ASN CG, LYS NZ, LYS CE)
 
     """
     struct_path = row["structure_path"]
@@ -214,8 +227,8 @@ def isopep_aro_plane_angle(row) -> float:
     pdb_file = pdb.PDBFile.read(struct_path)
     structure = struc.array([atom for atom in pdb_file.get_structure()[0] if atom.hetero==False and atom.chain_id == chain])
 
-    isopep_atoms = struc.array([atom for atom in structure if (atom.res_id == r1 and atom.atom_name == "NZ") or \
-                                                              (atom.res_id == r3 and atom.atom_name in ["CG", "OD1", "OD2"])])
+    isopep_atoms = struc.array([atom for atom in structure if (atom.res_id == r1 and atom.atom_name in ["NZ", "CE"]) or \
+                                                              (atom.res_id == r3 and atom.atom_name in ["CG"])])
     assert len(isopep_atoms) == 3, f"Found the following atoms in isopep_atoms: {isopep_atoms}"
     # Only three atoms to get the plane
     aro_atoms = struc.array([atom for atom in structure if atom.res_id == aro_res_id and \

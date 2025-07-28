@@ -17,15 +17,9 @@ def main():
     df = pd.read_csv(DATA_TABLE)
     df = df[df["Chain"].isna() == False]
     df["structure_path"] = df.apply(lambda x: os.path.join(POSITIVE_CONTROL, x["PDB code"].lower()+"_"+x["Chain"]+".pdb"), axis=1)
-    df["match_residues"] = df.apply(lambda x: "_".join(
-            [str(i) for i in[
-                x["Position 1\r\n(Bond 1)"], 
-                x["Position 2\r\n(catalytic)"], 
-                x["Position 3\r\n(Bond 2)"]
-            ]]
-        ), axis=1)
-
-    df["id"] = df.apply(lambda x: x["PDB code"]+"_"+x["Chain"]+x["match_residues"], axis=1)
+    def get_id(x):
+        return "_".join([x["PDB code"], x["Chain"], str(x["Position 1\r\n(Bond 1)"]), str(x["Position 2\r\n(catalytic)"]), str(x["Position 3\r\n(Bond 2)"])])
+    df["id"] = df.apply(get_id, axis=1)
     cond1 = (df["Is bonded"] == True)
     cond2 = (df["Interchain"] == False)
     cond3 = (df["Bad rotamer"] == False)
