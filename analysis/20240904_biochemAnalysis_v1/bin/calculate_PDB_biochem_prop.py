@@ -96,7 +96,7 @@ def get_aro_params(df, dist_threshold=10) -> pd.DataFrame:
     """
     # Cutoffs for aro cap
     dist_cutoff = 5
-    angle_cutoffs = [30, 150]
+    angle_cutoffs = [50, 130]
 
     outlist = []
     for index, row in df.iterrows():
