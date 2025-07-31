@@ -17,3 +17,4 @@ lib
 *isopeptide_bond_tables_history
 to_share
 *test*
+*__pycache__*

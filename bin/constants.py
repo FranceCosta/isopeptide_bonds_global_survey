@@ -91,6 +91,5 @@ ISOPEP_DOMAINS = [
     'DUF7929',
     'DUF7925',
     'DUF7617',
-    'DUF7601', 
-#    'CARDB' # This one is not present in the paper (to Few hits)
+    'DUF7601'
 ]

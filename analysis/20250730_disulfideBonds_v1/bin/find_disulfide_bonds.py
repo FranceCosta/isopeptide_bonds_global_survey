@@ -5,7 +5,6 @@ import os
 from Bio.PDB import NeighborSearch
 import pandas as pd
 from Bio import PDB
-from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv("../../.env")
@@ -15,8 +14,7 @@ AFDB_JESS_SCAN_TABLE = os.getenv("AFDB_JESS_SCAN_TABLE")
 AFDB_STRUCTURES = "/hps/nobackup/agb/research/francesco/tmp/jessAFDB_v3/AFDB/structures/**/cleaned_structures_tmp/*.pdb"
 TMP_DIR = "/hps/nobackup/agb/research/francesco/tmp/IBD_dis"
 ATOMS_RADII = {'S': 1.8}
-DATE = datetime.today().strftime('%Y%m%d')
-OUTPUT_CSV = f"output/{DATE}_disulfide_bonds.csv"
+OUTPUT_CSV = "output/disulfide_bonds.csv"
 
 def main():
     
