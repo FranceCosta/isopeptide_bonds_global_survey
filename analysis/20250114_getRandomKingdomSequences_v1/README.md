@@ -1,7 +1,4 @@
 ## Extract 1000 random sequences from Archaea and Bacteria
 
-`sbatch -t 12:00:00 --mem 2G --mail-type=END --mail-user=fcosta@ebi.ac.uk  -J randomAFDBSeqs --wrap="python bin/get_random_sequences.py"`
-- Fetch ~10k sequences from bacteria and archaea with length <= 1280 aa;
-- match to AFDB sequences, at least 1000 entries;
-
-**Note that this code relies on a local installation of the [Pfam database](https://www.ebi.ac.uk/interpro/entry/pfam/#table)**
+## Workflow
+- Fetch ~10k sequences from bacteria and archaea with length <= 1280 aa and match them to the AFDB database `python bin/get_random_sequences.py` (requires Pfam database and file with AFDB in fasta format, code to produce it in `../20240902_AFDBtoFasta_v1`);

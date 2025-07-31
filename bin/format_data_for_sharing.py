@@ -25,10 +25,16 @@ ARCHAEA_RANDOM_SEQUENCES = os.getenv("ARCHAEA_RANDOM_SEQUENCES")
 DISULFIDE_BONDS_TABLE = os.getenv("DISULFIDE_BONDS_TABLE")
 ALIGNED_ARO = os.getenv("ALIGNED_ARO")
 PDB_PROXIMITY_ANALYSIS = os.getenv("PDB_PROXIMITY_ANALYSIS")
+TABLE_WITH_PFAM = os.getenv("TABLE_WITH_PFAM")
 
 SHARE_DIR = "to_share"
 
 def main():
+
+    # Isopeptide bond PDB table mapped with Pfam data
+    tmp_df = pd.read_csv(TABLE_WITH_PFAM)
+    tmp_df.to_csv(os.path.join(SHARE_DIR, "pdb_isopeptide_models_pfam_domains.csv"), index=False)
+
 
     # PDB proximity analysis
     tmp_df = pd.read_csv(PDB_PROXIMITY_ANALYSIS)

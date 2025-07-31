@@ -13,8 +13,11 @@ from pfamenv import PFAM_USER, PFAM_HOST, PFAM_PASSWORD, PFAM_PORT, PFAM_VERSION
 from mysql import connector
 import pandas as pd
 from Bio import SeqIO
+import os
+from dotenv import load_dotenv
+load_dotenv("../../.env")
 
-AFDB_SEQUENCES = "/nfs/research/agb/research/francesco/projects/20240212_isopeptideBonds_v1/20240529_findWithJess_v1/analysis/20240902_AFDBtoFasta_v1/output/AFDB.fa"
+FULL_AFDB_SEQUENCES = os.getenv("FULL_AFDB_SEQUENCES")
 # Number of seqs to initilally extract from pfamseq
 PFAM_NUMBER_SEQS=10000
 # Number of sequences that should match to AFDB
@@ -52,7 +55,7 @@ def main():
     arc_count, bac_count = 0,0
     arc_ids, bac_ids = arc_df["pfamseq_acc"].unique(), bac_df["pfamseq_acc"].unique()
 
-    for i in SeqIO.parse(AFDB_SEQUENCES, "fasta"):
+    for i in SeqIO.parse(FULL_AFDB_SEQUENCES, "fasta"):
         if i.id in arc_ids:
             arc_count += 1
         elif i.id in bac_ids:

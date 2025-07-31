@@ -1,0 +1,1 @@
+- `PDB_bad_bonds_check_reassigned` and `manually_reassigned` Data from: Costa,F. et al. (2025) Isopeptor: a tool for detecting intramolecular isopeptide bonds in protein structures. Bioinformatics Advances, vbaf049.

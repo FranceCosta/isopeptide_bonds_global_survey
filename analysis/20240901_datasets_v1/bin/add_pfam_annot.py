@@ -50,21 +50,20 @@ def main():
     output = cursor.fetchall()
     d_df = pd.DataFrame(output, columns = columns)
     d_df["pdb_id"] = d_df["pdb_id"].apply(lambda x: x.lower())
-    data_df = pd.merge(df, d_df.rename(columns={"pdb_id":"PDB code", "chain":"Chain"}), how="left")\
-            .rename(columns={"Position 1\r\n(Bond 1)":"r1_bond", "Position 2\r\n(catalytic)":"r_cat", "Position 3\r\n(Bond 2)":"r2_bond"})
+    data_df = pd.merge(df, d_df.rename(columns={"pdb_id":"PDB code", "chain":"Chain"}), how="left")
 
     # Check which domains map to isopep bonds
     data_df["is_domain"] = data_df.apply(lambda x: is_domain(x), axis=1)
     data_df = data_df.sort_values("is_domain", ascending=False) \
-            .drop_duplicates(["PDB code", "r1_bond", "r_cat", "r2_bond"], keep="first")
+            .drop_duplicates(["PDB code", "Position 1\r\n(Bond 1)", "Position 2\r\n(catalytic)", "Position 3\r\n(Bond 2)"], keep="first")
     data_df.loc[data_df["is_domain"]==False, "pfamA_acc"] = np.NaN
     data_df.loc[data_df["is_domain"]==False, "pfamA_id"] = np.NaN
     data_df.loc[data_df["is_domain"]==False, "clan_acc"] = np.NaN
     data_df.loc[data_df["is_domain"]==False, "clan_id"] = np.NaN
     data_df.loc[data_df["is_domain"]==False, "seq_start"] = np.NaN
     data_df.loc[data_df["is_domain"]==False, "seq_end"] = np.NaN
-    data_df["PDB code"] = data_df["PDB code"].apply(lambda x: x.upper())
-    data_df.to_csv(OUTPUT, index=False)
+    data_df[["PDB code", "Chain", "Position 1\r\n(Bond 1)", "Position 2\r\n(catalytic)", "Position 3\r\n(Bond 2)",
+        "pfamA_acc", "pfamA_id", "clan_acc", "clan_id", "seq_start", "seq_end"]].to_csv(OUTPUT, index=False)
 
 def is_domain(row):
     """
@@ -72,7 +71,7 @@ def is_domain(row):
         Assign if at least 2/3 residues are in domain
     
     """
-    residues = [row["r1_bond"], row["r_cat"], row["r2_bond"]]
+    residues = [row["Position 1\r\n(Bond 1)"], row["Position 2\r\n(catalytic)"], row["Position 3\r\n(Bond 2)"]]
     status = False
     c = 0
     for res in residues:

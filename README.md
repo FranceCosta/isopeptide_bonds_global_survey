@@ -15,6 +15,7 @@ seaborn==0.13.2
 bio==1.83  
 matplotlib==3.8.0  
 numpy==1.26.4
+Isopeptor==0.0.75
 ```
 
 ## Project structure
@@ -53,9 +54,12 @@ To reproduce the key analyses:
 
 2. Install the required packages (see above).
 
-3. Download large files from [Zenodo](https://doi.org/10.5281/zenodo.15024939)
+3. Download large files from [Zenodo](https://doi.org/10.5281/zenodo.15024939) and set the path to the files in the `.env` file.
 
 4. Follow the instructions in each subproject’s README.md or use the Jupyter notebooks provided in notebooks/ or analysis/*.
+ 
+When the installation of other packages is required, that is specified in the README.md of the analysis.
+Some analysis require a local download of the [AFDB database](https://alphafold.ebi.ac.uk/download#full-dataset-section) (with structures in .pdb format), of the [Pfam database](https://www.ebi.ac.uk/interpro/entry/pfam/#table) and of the [BFVD](https://academic.oup.com/nar/article/53/D1/D340/7906834) database.
 
 **Note that several scripts rely on the [SLURM job scheduler](https://slurm.schedmd.com/documentation.html)**
 
@@ -63,7 +67,6 @@ To reproduce the key analyses:
 
 All non-generated input data is stored in data/ and described in data/README.md.
 Output files are reproducible and not backed up here but downloadable from [Zenodo](https://doi.org/10.5281/zenodo.15024939).
-
 
 ## Contact
 
