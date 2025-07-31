@@ -17,9 +17,6 @@ def main():
     df = pd.read_csv(DATA_TABLE)
     df = df[df["Chain"].isna() == False]
     df["structure_path"] = df.apply(lambda x: os.path.join(POSITIVE_CONTROL, x["PDB code"].lower()+"_"+x["Chain"]+".pdb"), axis=1)
-    def get_id(x):
-        return "_".join([x["PDB code"], x["Chain"], str(x["Position 1\r\n(Bond 1)"]), str(x["Position 2\r\n(catalytic)"]), str(x["Position 3\r\n(Bond 2)"])])
-    df["id"] = df.apply(get_id, axis=1)
     cond1 = (df["Is bonded"] == True)
     cond2 = (df["Interchain"] == False)
     cond3 = (df["Bad rotamer"] == False)
@@ -30,11 +27,12 @@ def main():
     data = []
     for index, row in df.iterrows():
         struct_path = row["structure_path"]
-        id_ = row["id"]
+        pdb_code = row["PDB code"]
         chain = row["Chain"]
         r1 = row["Position 1\r\n(Bond 1)"]
         r2 = row["Position 2\r\n(catalytic)"]
-        r3 = row["Position 3\r\n(Bond 2)"]        
+        r3 = row["Position 3\r\n(Bond 2)"]     
+        isopep_type = row["Isopeptide type"]   
         pdb_file = pdb.PDBFile.read(struct_path)
         structure = pdb_file.get_structure()[0]
         structure = struc.array([atom for atom in pdb_file.get_structure()[0] if atom.hetero==False and atom.chain_id == chain])
@@ -77,10 +75,10 @@ def main():
         for aa in seq:
             aa_counter[aa] += 1
         
-        data.append([id_, r1, r2, r3]+list(aa_counter.values()))
+        data.append([pdb_code, chain, r1, r2, r3, isopep_type]+list(aa_counter.values()))
 
-    ch_df = pd.DataFrame(data, columns=["id", "r1_bond", "r_cat", "r2_bond"]+list(aa_counter.keys()))
-    ch_df = pd.merge(ch_df, df[["id", "Isopeptide type"]], how="left")
+    ch_df = pd.DataFrame(data, columns=["PDB code", "Chain", "Position 1\r\n(Bond 1)", "Position 2\r\n(catalytic)", 
+        "Position 3\r\n(Bond 2)", "Isopeptide type"]+list(aa_counter.keys()))
     ch_df.to_csv(OUTPUT_CSV, index=False)
 
 if __name__ == "__main__":

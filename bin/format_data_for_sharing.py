@@ -32,15 +32,6 @@ def main():
 
     # PDB proximity analysis
     tmp_df = pd.read_csv(PDB_PROXIMITY_ANALYSIS)
-    tmp_df["PDB code"] = tmp_df["id"].apply(lambda x: x.split("_")[0])
-    tmp_df["Chain"] = tmp_df["id"].apply(lambda x: x.split("_")[1])
-    tmp_df.rename(columns={"r1_bond": "Position 1 (Bond 1)",
-        "r_cat": "Position 2 (catalytic)",
-        "r2_bond": "Position 3 (Bond 2)"})
-    del tmp_df["id"]
-    tmp_df = tmp_df[["PDB code", "Chain", "Position 1 (Bond 1)", "Position 2 (catalytic)", "Position 3 (Bond 2)", "Isopeptide type",
-        "A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y"
-    ]]
     tmp_df.to_csv(os.path.join(SHARE_DIR, "proximal_residues.csv"), index=False)
 
     # Disulfide bonds
