@@ -22,11 +22,45 @@ PDB_BIOCHEM = os.getenv("PDB_BIOCHEM")
 AF2_TEMPLATES_BIOCHEM = os.getenv("AF2_TEMPLATES_BIOCHEM")
 BACTERIA_RANDOM_SEQUENCES = os.getenv("BACTERIA_RANDOM_SEQUENCES")
 ARCHAEA_RANDOM_SEQUENCES = os.getenv("ARCHAEA_RANDOM_SEQUENCES")
+DISULFIDE_BONDS_TABLE = os.getenv("DISULFIDE_BONDS_TABLE")
+ALIGNED_ARO = os.getenv("ALIGNED_ARO")
+PDB_PROXIMITY_ANALYSIS = os.getenv("PDB_PROXIMITY_ANALYSIS")
 
 SHARE_DIR = "to_share"
 
 def main():
-    
+
+    # PDB proximity analysis
+    tmp_df = pd.read_csv(PDB_PROXIMITY_ANALYSIS)
+    tmp_df["PDB code"] = tmp_df["id"].apply(lambda x: x.split("_")[0])
+    tmp_df["Chain"] = tmp_df["id"].apply(lambda x: x.split("_")[1])
+    tmp_df.rename(columns={"r1_bond": "Position 1 (Bond 1)",
+        "r_cat": "Position 2 (catalytic)",
+        "r2_bond": "Position 3 (Bond 2)"})
+    del tmp_df["id"]
+    tmp_df = tmp_df[["PDB code", "Chain", "Position 1 (Bond 1)", "Position 2 (catalytic)", "Position 3 (Bond 2)", "Isopeptide type",
+        "A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y"
+    ]]
+    tmp_df.to_csv(os.path.join(SHARE_DIR, "proximal_residues.csv"), index=False)
+
+    # Disulfide bonds
+    tmp_df = pd.read_csv(DISULFIDE_BONDS_TABLE)
+    tmp_df.to_csv(os.path.join(SHARE_DIR, "disulfide_bonds.csv"), index=False)
+
+    # Aligned aro
+    output_zip = os.path.join(SHARE_DIR, "aligned_aro.zip")
+    output_gz = f"{output_zip}.gz"
+    with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for file in os.listdir(ALIGNED_ARO):
+                file_path = os.path.join(ALIGNED_ARO, file)
+                arcname = os.path.relpath(file_path, ALIGNED_ARO)
+                zipf.write(file_path, arcname)
+    # Compress the zip file using gzip
+    with open(output_zip, "rb") as f_in, gzip.open(output_gz, "wb") as f_out:
+        shutil.copyfileobj(f_in, f_out)
+    # Remove the original zip file
+    os.remove(output_zip)
+
     # AFDB scan
     tmp_df = pd.read_csv(AFDB_JESS_SCAN_TABLE)
     del tmp_df["chain"]
@@ -52,18 +86,15 @@ def main():
     # AF2 models (retain only ranked_0.pdb file!)
     output_zip = os.path.join(SHARE_DIR, "alphafold2_models.zip")
     output_gz = f"{output_zip}.gz"
-
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(AF2_POS_SET_TEMPLATES):
             if "ranked_0.pdb" in files:  # Only proceed if the file exists in the directory
                 file_path = os.path.join(root, "ranked_0.pdb")
                 arcname = os.path.relpath(file_path, AF2_POS_SET_TEMPLATES)
                 zipf.write(file_path, arcname)
-
     # Compress the zip file using gzip
     with open(output_zip, "rb") as f_in, gzip.open(output_gz, "wb") as f_out:
         shutil.copyfileobj(f_in, f_out)
-
     # Remove the original zip file
     os.remove(output_zip)
 
@@ -75,11 +106,8 @@ def main():
     del tmp_df["Assigned bond"]
     del tmp_df["structure_path"]
     del tmp_df["match_residues"]
-    del tmp_df["aro-isopep_planes_angle"]
     del tmp_df["water_resid_NZ"]
     del tmp_df["water_distance_NZ"]
-    del tmp_df["water_NZ_ASA"]
-    del tmp_df["water_OD_ASA"]
     del tmp_df["lys_x3"]
     del tmp_df["lys_x4"]
 
@@ -105,9 +133,9 @@ def main():
     
     # Compress all data
     tar = tarfile.open(os.path.join(SHARE_DIR, f"{datetime.date.today()}_data.tar.gz"), "w:gz")  
-    for root, dirs, files in os.walk(SHARE_DIR):  
+    for root, dirs, files in os.walk(SHARE_DIR):
         for file in files:  
-            if file != "README.md":  
+            if file != "README.md" and not file.endswith(".tar.gz"):
                 tar.add(os.path.join(root, file), arcname=os.path.relpath(os.path.join(root, file), SHARE_DIR))  
     tar.close()
     
