@@ -66,7 +66,7 @@ def main():
     tmp_df.to_csv(os.path.join(SHARE_DIR, "afdb_scan_isopeptor.csv"), index=False)
 
     # AFDB scan all domains
-    tmp_df = pd.read_csv(AFDB_DOMAINS)
+    tmp_df = pd.read_csv(AFDB_DOMAINS).drop_duplicates()
     tmp_df.to_csv(os.path.join(SHARE_DIR, "afdb_scan_isopeptor_pfam_annotations.csv"), index=False)
 
     # BFVD scan
@@ -77,7 +77,7 @@ def main():
     tmp_df.to_csv(os.path.join(SHARE_DIR, "bfvd_scan_isopeptor.csv"), index=False)
 
     # FA_pred
-    tmp_df = pd.read_csv(FA_PRED)
+    tmp_df = pd.read_table(FA_PRED)
     tmp_df.to_csv(os.path.join(SHARE_DIR, "fa_pred.csv"), index=False)
 
     # AF2 models (retain only ranked_0.pdb file!)
